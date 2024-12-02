@@ -1,0 +1,7 @@
+{
+  "source": "../assets/belt.png",
+  "frames": 6,
+  "frameSize": {
+    "x": 32, "y": 32
+  } 
+}
