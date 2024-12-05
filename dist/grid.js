@@ -1,51 +1,36 @@
-import * as PIXI from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
-class Cell extends PIXI.Container {
-    occupied;
-    globalPos;
-    child;
-    constructor(globalPos = { x: 0, y: 0 }) {
-        super();
-        this.occupied = false;
-        this.globalPos = { ...globalPos };
-        this.child = null;
-    }
-    hasChild() {
-        return this.child !== null;
-    }
-    setChild(value) {
-        this.child = value;
-        this.addChild(value);
-        this.occupied = true;
-    }
-    clearChild() {
-        this.child = null;
-        this.removeChildAt(0);
-        this.occupied = false;
-    }
-    getChild() {
-        return this.child;
-    }
-}
-export class Grid extends PIXI.Container {
+import { Container } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
+export class Grid extends Container {
     values;
-    constructor(sizeX, sizeY) {
+    usedKeys;
+    constructor() {
         super();
         this.values = {};
-        for (let x = 0; x < sizeX + 1; x++) {
-            for (let y = 0; y < sizeY + 1; y++) {
-                const cell = new Cell({ x: x * 32, y: y * 32 });
-                this.addChild(cell);
-                this.values[`${x}_${y}`] = cell;
-            }
-        }
+        this.usedKeys = {};
     }
-    hasCell(coord) {
-        if (this.values[coord] !== undefined) {
-            return true;
-        }
-        return false;
+    addObject(obj) {
+        const key = this.getNewKey();
+        this.addChild(obj);
+        obj.key = key;
+        this.values[key] = obj;
+        this.usedKeys[key] = 0;
     }
-    getCell(coord) {
-        return this.values[coord];
+    removeObject(key) {
+        const obj = this.values[key];
+        this.removeChild(obj);
+        delete this.values[key];
+        delete this.usedKeys[key];
+    }
+    hasObject(key) {
+        if (this.values[key] === undefined) {
+            return false;
+        }
+        return true;
+    }
+    getNewKey() {
+        let newKey = -1;
+        while (this.usedKeys[newKey] !== undefined || newKey < 0) {
+            newKey = Math.floor(Math.random() * 10000000); //! talvez acabe os numeros
+        }
+        return newKey;
     }
 }

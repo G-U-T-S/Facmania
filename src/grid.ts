@@ -1,70 +1,49 @@
-import * as PIXI from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
+import { Container } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 import { PlacebleObject } from './placeableObject';
-import { clearList } from '../node_modules/pixi.js/dist/pixi.js';
 
 
-class Cell extends PIXI.Container{
-  public occupied: boolean;
-  public globalPos: {x: number, y: number};
-  public child: PlacebleObject | null;
+export class Grid extends Container {
+  readonly values: {[index: number]: PlacebleObject};
+  readonly usedKeys: {[index: number]: 0};
 
-  constructor(globalPos = {x: 0, y: 0}) {
+  constructor() {
     super();
-
-    this.occupied = false;
-    this.globalPos = { ...globalPos };
-    this.child = null;
+    this.values = {};
+    this.usedKeys = {};
   }
 
-  hasChild(): boolean {
-    return this.child !== null;
+  public addObject(obj: PlacebleObject) {
+    const key = this.getNewKey();
+    this.addChild(obj);
+    obj.key = key;
+    
+    this.values[key] = obj;
+    this.usedKeys[key] = 0;
   }
 
-  setChild(value: PlacebleObject) {
-    this.child = value;
-    this.addChild(value);
-    this.occupied = true;
+  public removeObject(key: number) {
+    const obj = this.values[key];
+    this.removeChild(obj);
+
+    delete this.values[key];
+    delete this.usedKeys[key];
   }
 
-  clearChild(): void {
-    this.child = null;
-    this.removeChildAt(0);
-    this.occupied = false;
-  }
-
-  getChild(): PlacebleObject | null {
-    return this.child;
-  }
-}
-
-
-export class Grid extends PIXI.Container{
-  private values: {[index: string]: Cell};
-
-  constructor(sizeX: number, sizeY: number) {
-    super();
-
-    this.values = {}
-
-    for (let x = 0; x < sizeX + 1; x++) {
-      for (let y = 0; y < sizeY + 1; y++) {
-        const cell = new Cell({x: x * 32, y: y * 32});
-
-        this.addChild(cell);
-        this.values[`${x}_${y}`] = cell;
-      }
+  public hasObject(key: number): boolean {
+    if (this.values[key] === undefined) {
+      return false;
     }
+    
+    return true;
   }
 
-  hasCell(coord: string): boolean {
-    if (this.values[coord] !== undefined) {
-      return true;
+  private getNewKey(): number {
+    let newKey = -1;
+
+    while (this.usedKeys[newKey] !== undefined || newKey < 0) {
+      newKey = Math.floor(Math.random() * 10000000);//! talvez acabe os numeros
     }
 
-    return false;
-  }
-
-  getCell(coord: string): Cell | undefined {
-    return this.values[coord];
+    return newKey;
   }
 }
