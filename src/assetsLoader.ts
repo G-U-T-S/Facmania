@@ -2,11 +2,11 @@ import { Assets, Texture } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist
 
 
 Assets.add({
-  alias: "belt",
-  src: "../assets/belt.png"
+  alias: "beltRight",
+  src: "../assets/beltRight.png"
 });
 
 
 export const spriteSheets = {
-  belt: await Assets.load<PIXI.Texture>("belt")
+  beltRight: await Assets.load<Texture>("beltRight")
 };

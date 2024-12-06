@@ -3,18 +3,14 @@ export class PlacebleObject extends AnimatedSprite {
     sizeInTiles;
     size;
     key;
-    hasAnimation;
-    constructor(sizeInTiles, pos, frames, hasAnim) {
+    constructor(sizeInTiles, pos, frames) {
         super(frames);
         this.key = -1;
-        this.hasAnimation = hasAnim;
-        this.position = { ...pos };
-        this.sizeInTiles = { ...sizeInTiles };
+        this.position = pos;
+        this.sizeInTiles = sizeInTiles;
         this.size = {
             x: sizeInTiles.x * 32, y: sizeInTiles.y * 32
         };
-        this.animationSpeed = 0.5;
-        this.play();
     }
     isColliding(other) {
         const AisToTheRightOfB = this.position.x >= other.position.x + other.size.x;

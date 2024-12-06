@@ -1,4 +1,8 @@
-import {Application, Texture, Assets, Container, ContainerChild, Sprite, Rectangle} from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
+import {
+  Application, Texture, Assets, Container,
+  ContainerChild, Sprite, Rectangle
+} from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
+
 import { Grid } from './grid.js';
 import { PlacebleObject } from './placeableObject.js';
 import { initDevtools } from '../node_modules/@pixi/devtools/dist/index.js';//* DEBUG
@@ -9,17 +13,18 @@ import { spriteSheets } from './assetsLoader.js';
 class Belt extends PlacebleObject{
   constructor(pos: basicVector) {
     super(
-      {x: 1, y: 1}, { ...pos },
-      convertSpritesheet(spriteSheets.belt, {x: 32, y: 32}, 6),
-      true
+      {x: 1, y: 1}, pos,
+      convertSpritesheet(spriteSheets.beltRight, {x: 32, y: 32}, 6)
     );
+
+    this.animationSpeed = 0.25;
+    this.play();
   }
 }
 
 
 function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: number): Array<Texture> {
   //! por enquanto so conssegue carregar animações alinhadas, não considera colunas;
-  
   const textures: Array<Texture> = [];
 
   for (let x = 0; x < frameCount; x++) {
@@ -48,7 +53,7 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
       event.preventDefault();
   });
 
-  let selectedItem: "none" | "belt" | "itemSource" | "remove" = "none";
+  let selectedItem: "none" | "belt" | "itemSource" | "remove" = "belt";
   let isDraggin = false;
   
   const bgDark = await Assets.load<Texture>("../assets/bgDark.png");
@@ -65,7 +70,7 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
     }
 
     if (selectedItem === "remove") {
-      tryRemoveObject(getSnapedPos({x: ev.globalX, y: ev.globalY}));
+      tryRemoveObject({x: ev.globalX, y: ev.globalY});
     }
     else {
       tryPlaceObject(selectedItem, getSnapedPos({x: ev.globalX, y: ev.globalY}));
@@ -76,7 +81,7 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
     isDraggin = true;
 
     if (selectedItem === "remove") {
-      tryRemoveObject(getSnapedPos({x: ev.globalX, y: ev.globalY}));
+      tryRemoveObject({x: ev.globalX, y: ev.globalY});
     }
     else {
       tryPlaceObject(selectedItem, getSnapedPos({x: ev.globalX, y: ev.globalY}));
@@ -126,13 +131,13 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
   }
 
 
-  function tryPlaceObject(item: string, position: basicVector): void {
+  function tryPlaceObject(item: string, pos: basicVector): void {
     let obj: PlacebleObject | undefined = undefined;
     let collide = false;
 
     switch (item) {
       case "belt": {
-        obj = new Belt({ ...position });
+        obj = new Belt(pos);
         break;
       }
     }
@@ -154,13 +159,29 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
 
   function tryRemoveObject(point: basicVector): void {
     Object.entries(grid.values).forEach((value, _) => {
-      const obj = value[1]
+      const obj = value[1];
       
-      if (obj.collideWithPoint({ ...point })) {
+      if (obj.collideWithPoint(point)) {
         grid.removeObject(obj.key);
         return;
       }
     });
+  }
+
+
+  function getObjectByCollision(point: basicVector): PlacebleObject | undefined {
+    let returnValue: PlacebleObject | undefined;
+    
+    Object.entries(grid.values).forEach((value, _) => {
+      const obj = value[1];
+
+      if (obj.collideWithPoint(point)) {
+        returnValue = obj;
+        return;
+      }
+    });
+
+    return returnValue;
   }
 
 
