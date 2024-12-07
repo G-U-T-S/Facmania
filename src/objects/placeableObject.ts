@@ -1,16 +1,14 @@
 import { AnimatedSprite, Texture } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
-import { basicVector } from './interfaces';
+import { basicVector } from '../interfacesAndTypes';
 
 
 export class PlacebleObject extends AnimatedSprite {
   readonly sizeInTiles: basicVector;
-  readonly size: {x: number, y: number};
-  public key: number;
+  readonly size: basicVector;
 
   constructor(sizeInTiles: basicVector, pos: basicVector, frames: Array<Texture>) {
     super(frames);
 
-    this.key = -1;
     this.position = pos;
     this.sizeInTiles = sizeInTiles;
     this.size = {

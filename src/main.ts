@@ -1,51 +1,22 @@
 import {
   Application, Texture, Assets, Container,
-  ContainerChild, Sprite, Rectangle
+  ContainerChild, Sprite
 } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 
-import { Grid } from './grid.js';
-import { PlacebleObject } from './placeableObject.js';
 import { initDevtools } from '../node_modules/@pixi/devtools/dist/index.js';//* DEBUG
-import { basicVector } from './interfaces.js';
-import { spriteSheets } from './assetsLoader.js';
+import { basicVector, objectTypes } from './interfacesAndTypes.js';
+import { ObjectManager } from './objectsManager.js';
 
 
-class Belt extends PlacebleObject{
-  constructor(pos: basicVector) {
-    super(
-      {x: 1, y: 1}, pos,
-      convertSpritesheet(spriteSheets.beltRight, {x: 32, y: 32}, 6)
-    );
-
-    this.animationSpeed = 0.25;
-    this.play();
-  }
-}
-
-
-function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: number): Array<Texture> {
-  //! por enquanto so conssegue carregar animações alinhadas, não considera colunas;
-  const textures: Array<Texture> = [];
-
-  for (let x = 0; x < frameCount; x++) {
-    textures.push(new Texture({
-      source: sheet.source,
-      frame: new Rectangle(x * frameSize.x, 0, frameSize.x, frameSize.y)
-    }));
-  }
-
-  return textures;
-}
+//TODO criar um sistema para lidar com a sincronização
+//TODO das esteiras, talvez algo como factorio, que separe cada esteira em sua propria linha
 
 
 (async () => {
   const app = new Application();
-  await app.init({
-    resizeTo: window,
-    backgroundColor: "black",
-  });
-  app.stage.eventMode = "static";
+  await app.init({ resizeTo: window });
   app.stage.hitArea = app.screen;
+  app.stage.eventMode = "static";
   document.body.appendChild(app.canvas);
 
   //& desativa o menu do botão direito
@@ -53,7 +24,7 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
       event.preventDefault();
   });
 
-  let selectedItem: "none" | "belt" | "itemSource" | "remove" = "belt";
+  let selectedItem: objectTypes = "none";
   let isDraggin = false;
   
   const bgDark = await Assets.load<Texture>("../assets/bgDark.png");
@@ -61,8 +32,28 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
   const BG = createBg([bgDark, bgLight]);
   app.stage.addChild(BG);
 
-  const grid = new Grid();
-  app.stage.addChild(grid);
+  const objectMng = new ObjectManager();
+  app.stage.addChild(objectMng);
+
+  app.stage.onpointerdown = (ev) => {
+    isDraggin = true;
+
+    if (selectedItem === "remove") {
+      objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
+    }
+    else if (selectedItem === "belt") {
+      objectMng.addBelt(
+        getSnapedPos({x: ev.globalX, y: ev.globalY}),
+        ev.movement
+      );
+    }  
+  };
+
+  app.stage.onpointerup = () => {
+    isDraggin = false;
+
+    selectedItem = selectedItem == "remove" ? "belt" : "belt";
+  };
 
   app.stage.onpointermove = (ev) => {
     if (!isDraggin) {
@@ -70,28 +61,14 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
     }
 
     if (selectedItem === "remove") {
-      tryRemoveObject({x: ev.globalX, y: ev.globalY});
+      objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
     }
-    else {
-      tryPlaceObject(selectedItem, getSnapedPos({x: ev.globalX, y: ev.globalY}));
+    else if (selectedItem === "belt") {
+      objectMng.addBelt(
+        getSnapedPos({x: ev.globalX, y: ev.globalY}),
+        ev.movement
+      );
     }
-  };
-
-  app.stage.onpointerdown = (ev) => {
-    isDraggin = true;
-
-    if (selectedItem === "remove") {
-      tryRemoveObject({x: ev.globalX, y: ev.globalY});
-    }
-    else {
-      tryPlaceObject(selectedItem, getSnapedPos({x: ev.globalX, y: ev.globalY}));
-    }
-  };
-
-  app.stage.onpointerup = () => {
-    isDraggin = false;
-
-    selectedItem = selectedItem == "remove" ? "belt" : "remove"; 
   };
 
 
@@ -131,57 +108,8 @@ function convertSpritesheet(sheet: Texture, frameSize: basicVector, frameCount: 
   }
 
 
-  function tryPlaceObject(item: string, pos: basicVector): void {
-    let obj: PlacebleObject | undefined = undefined;
-    let collide = false;
-
-    switch (item) {
-      case "belt": {
-        obj = new Belt(pos);
-        break;
-      }
-    }
-
-    if (obj === undefined) { return; }
-
-    Object.entries(grid.values).forEach((value, _) => {
-      if (obj.isColliding(value[1])) {
-        collide = true;
-        return;
-      }
-    });
-
-    if (!collide) {
-      grid.addObject(obj);
-    }
-  }
-
-
-  function tryRemoveObject(point: basicVector): void {
-    Object.entries(grid.values).forEach((value, _) => {
-      const obj = value[1];
-      
-      if (obj.collideWithPoint(point)) {
-        grid.removeObject(obj.key);
-        return;
-      }
-    });
-  }
-
-
-  function getObjectByCollision(point: basicVector): PlacebleObject | undefined {
-    let returnValue: PlacebleObject | undefined;
-    
-    Object.entries(grid.values).forEach((value, _) => {
-      const obj = value[1];
-
-      if (obj.collideWithPoint(point)) {
-        returnValue = obj;
-        return;
-      }
-    });
-
-    return returnValue;
+  function posToCoord(pos: basicVector): string {
+    return `${pos.x}_${pos.y}`;
   }
 
 
