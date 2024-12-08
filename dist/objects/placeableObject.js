@@ -4,8 +4,8 @@ export class PlacebleObject extends AnimatedSprite {
     size;
     constructor(sizeInTiles, pos, frames) {
         super(frames);
-        this.position = pos;
-        this.sizeInTiles = sizeInTiles;
+        this.position = { ...pos };
+        this.sizeInTiles = { ...sizeInTiles };
         this.size = {
             x: sizeInTiles.x * 32, y: sizeInTiles.y * 32
         };
