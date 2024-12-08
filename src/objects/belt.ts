@@ -8,6 +8,8 @@ export class Belt extends PlacebleObject{
   public direction: basicVector;
 
   constructor(pos: basicVector, dir: basicVector) {
+    //& maybe just change direction if its diferent;  
+
     let chosedFrames: Array<Texture> = [];
 
     if (dir.x > 0) {
@@ -27,16 +29,16 @@ export class Belt extends PlacebleObject{
     }
 
     super(
-      {x: 1, y: 1}, pos, chosedFrames
+      {x: 1, y: 1}, { ...pos }, chosedFrames
     );
 
-    this.direction = dir;
+    this.direction = { ...dir };
     this.animationSpeed = 0.25;
     this.play();
   }
 
   public changeDirection(newDir: basicVector): void {
-    this.direction = newDir;
+    this.direction = { ...newDir };
 
     if (newDir.x > 0) {
       this.textures = spriteFrames.belt.right;

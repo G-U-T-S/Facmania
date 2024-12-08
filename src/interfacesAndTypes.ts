@@ -1,6 +1,6 @@
 export interface basicVector {
   x: number;
-  y: number
+  y: number;
 };
 
 

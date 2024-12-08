@@ -1,5 +1,5 @@
 import { Container } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
-import { Belt } from './objects/belt.js';
+import { Belt } from './belt.js';
 //! se o id é a posição do objeto
 //! não existe nenhuma possibilidade de tal id acabar se repetindo?
 //TODO talve um arquivo separado para lidar com a logica das belts;
@@ -30,8 +30,8 @@ export class ObjectManager extends Container {
                     this.lasPlacedBelt.changeDirection({ x: 0, y: 1 });
                 }
                 else if (pos.y < this.lasPlacedBelt.position.y) {
-                    dir = { x: -1, y: 0 };
-                    this.lasPlacedBelt.changeDirection({ x: -1, y: 0 });
+                    dir = { x: 0, y: -1 };
+                    this.lasPlacedBelt.changeDirection({ x: 0, y: -1 });
                 }
             }
             const belt = new Belt({ ...pos }, { ...dir });

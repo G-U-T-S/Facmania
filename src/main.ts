@@ -1,11 +1,11 @@
 import {
   Application, Texture, Assets, Container,
-  ContainerChild, Sprite
+  ContainerChild, Sprite, BitmapText
 } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 
 import { initDevtools } from '../node_modules/@pixi/devtools/dist/index.js';//* DEBUG
 import { basicVector, objectTypes } from './interfacesAndTypes.js';
-import { ObjectManager } from './objectsManager.js';
+import { ObjectManager } from './objects/objectsManager.js';
 
 
 //TODO criar um sistema para lidar com a sincronização
@@ -35,6 +35,9 @@ import { ObjectManager } from './objectsManager.js';
   const objectMng = new ObjectManager();
   app.stage.addChild(objectMng);
 
+  const debugText = new BitmapText({x: 50, y: 50});
+  app.stage.addChild(debugText);
+
   app.stage.onpointerdown = (ev) => {
     isDraggin = true;
 
@@ -42,10 +45,7 @@ import { ObjectManager } from './objectsManager.js';
       objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
     }
     else if (selectedItem === "belt") {
-      objectMng.addBelt(
-        getSnapedPos({x: ev.globalX, y: ev.globalY}),
-        ev.movement
-      );
+      objectMng.addBelt(getSnapedPos({x: ev.globalX, y: ev.globalY}));
     }  
   };
 
@@ -64,10 +64,7 @@ import { ObjectManager } from './objectsManager.js';
       objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
     }
     else if (selectedItem === "belt") {
-      objectMng.addBelt(
-        getSnapedPos({x: ev.globalX, y: ev.globalY}),
-        ev.movement
-      );
+      objectMng.addBelt(getSnapedPos({x: ev.globalX, y: ev.globalY}));
     }
   };
 
