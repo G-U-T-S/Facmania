@@ -22,7 +22,7 @@ export class Belt extends PlacebleObject {
         }
         super({ x: 1, y: 1 }, { ...pos }, chosedFrames);
         this.direction = { ...dir };
-        this.animationSpeed = 0.25;
+        this.animationSpeed = 0.2;
         this.play();
     }
     changeDirection(newDir) {

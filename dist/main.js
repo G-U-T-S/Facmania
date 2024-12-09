@@ -1,6 +1,7 @@
 import { Application, Assets, Container, Sprite, BitmapText } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 import { initDevtools } from '../node_modules/@pixi/devtools/dist/index.js'; //* DEBUG
-import { ObjectManager } from './objects/objectsManager.js';
+import { posToCoord } from './utils.js';
+import { ObjectsManager } from './managers/objectsManager.js';
 //TODO criar um sistema para lidar com a sincronização
 //TODO das esteiras, talvez algo como factorio, que separe cada esteira em sua propria linha
 (async () => {
@@ -19,7 +20,7 @@ import { ObjectManager } from './objects/objectsManager.js';
     const bgLight = await Assets.load("../assets/bgLight.png");
     const BG = createBg([bgDark, bgLight]);
     app.stage.addChild(BG);
-    const objectMng = new ObjectManager();
+    const objectMng = new ObjectsManager();
     app.stage.addChild(objectMng);
     const debugText = new BitmapText({ x: 50, y: 50 });
     app.stage.addChild(debugText);
@@ -29,12 +30,12 @@ import { ObjectManager } from './objects/objectsManager.js';
             objectMng.removeObject("belt", posToCoord(getSnapedPos({ x: ev.globalX, y: ev.globalY })));
         }
         else if (selectedItem === "belt") {
-            objectMng.addBelt(getSnapedPos({ x: ev.globalX, y: ev.globalY }));
+            objectMng.addObject("belt", getSnapedPos({ x: ev.globalX, y: ev.globalY }));
         }
     };
     app.stage.onpointerup = () => {
         isDraggin = false;
-        selectedItem = selectedItem == "remove" ? "belt" : "belt";
+        selectedItem = selectedItem == "remove" ? "belt" : "remove";
     };
     app.stage.onpointermove = (ev) => {
         if (!isDraggin) {
@@ -44,7 +45,7 @@ import { ObjectManager } from './objects/objectsManager.js';
             objectMng.removeObject("belt", posToCoord(getSnapedPos({ x: ev.globalX, y: ev.globalY })));
         }
         else if (selectedItem === "belt") {
-            objectMng.addBelt(getSnapedPos({ x: ev.globalX, y: ev.globalY }));
+            objectMng.addObject("belt", getSnapedPos({ x: ev.globalX, y: ev.globalY }));
         }
     };
     //! just debug, going to change it later
@@ -70,9 +71,6 @@ import { ObjectManager } from './objects/objectsManager.js';
             x: Math.floor(pos.x / 32) * 32,
             y: Math.floor(pos.y / 32) * 32
         };
-    }
-    function posToCoord(pos) {
-        return `${pos.x}_${pos.y}`;
     }
     initDevtools({ app: app });
 })();

@@ -1,5 +1,5 @@
 import { AnimatedSprite, Texture } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
-import { basicVector } from '../interfacesAndTypes';
+import { basicVector } from '../utils';
 
 
 export class PlacebleObject extends AnimatedSprite {

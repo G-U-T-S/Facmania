@@ -1,6 +1,6 @@
 import { Texture } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 import { PlacebleObject } from './placeableObject.js';
-import { basicVector } from '../interfacesAndTypes.js';
+import { basicVector } from '../utils.js';
 import { spriteFrames } from '../assetsLoader.js';
 
 
@@ -33,7 +33,7 @@ export class Belt extends PlacebleObject{
     );
 
     this.direction = { ...dir };
-    this.animationSpeed = 0.25;
+    this.animationSpeed = 0.2;
     this.play();
   }
 

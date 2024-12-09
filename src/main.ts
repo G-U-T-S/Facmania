@@ -4,8 +4,8 @@ import {
 } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
 
 import { initDevtools } from '../node_modules/@pixi/devtools/dist/index.js';//* DEBUG
-import { basicVector, objectTypes } from './interfacesAndTypes.js';
-import { ObjectManager } from './objects/objectsManager.js';
+import { basicVector, objectTypes, posToCoord } from './utils.js';
+import { ObjectsManager } from './managers/objectsManager.js';
 
 
 //TODO criar um sistema para lidar com a sincronização
@@ -32,7 +32,7 @@ import { ObjectManager } from './objects/objectsManager.js';
   const BG = createBg([bgDark, bgLight]);
   app.stage.addChild(BG);
 
-  const objectMng = new ObjectManager();
+  const objectMng = new ObjectsManager();
   app.stage.addChild(objectMng);
 
   const debugText = new BitmapText({x: 50, y: 50});
@@ -45,14 +45,14 @@ import { ObjectManager } from './objects/objectsManager.js';
       objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
     }
     else if (selectedItem === "belt") {
-      objectMng.addBelt(getSnapedPos({x: ev.globalX, y: ev.globalY}));
+      objectMng.addObject("belt", getSnapedPos({x: ev.globalX, y: ev.globalY}));
     }  
   };
 
   app.stage.onpointerup = () => {
     isDraggin = false;
 
-    selectedItem = selectedItem == "remove" ? "belt" : "belt";
+    selectedItem = selectedItem == "remove" ? "belt" : "remove";
   };
 
   app.stage.onpointermove = (ev) => {
@@ -64,7 +64,7 @@ import { ObjectManager } from './objects/objectsManager.js';
       objectMng.removeObject("belt", posToCoord(getSnapedPos({x: ev.globalX, y: ev.globalY})));
     }
     else if (selectedItem === "belt") {
-      objectMng.addBelt(getSnapedPos({x: ev.globalX, y: ev.globalY}));
+      objectMng.addObject("belt", getSnapedPos({x: ev.globalX, y: ev.globalY}));
     }
   };
 
@@ -103,12 +103,6 @@ import { ObjectManager } from './objects/objectsManager.js';
       y: Math.floor(pos.y / 32) * 32
     };
   }
-
-
-  function posToCoord(pos: basicVector): string {
-    return `${pos.x}_${pos.y}`;
-  }
-
 
   initDevtools({ app: app });
 })();

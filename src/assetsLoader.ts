@@ -1,5 +1,5 @@
 import { Assets, Texture, Rectangle } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.min.mjs';
-import { basicVector } from './interfacesAndTypes.js';
+import { basicVector } from './utils.js';
 
 
 const spriteSheets = {
