@@ -8,10 +8,6 @@ import { basicVector, objectTypes, posToCoord } from './utils.js';
 import { ObjectsManager } from './managers/objectsManager.js';
 
 
-//TODO criar um sistema para lidar com a sincronização
-//TODO das esteiras, talvez algo como factorio, que separe cada esteira em sua propria linha
-
-
 (async () => {
   const app = new Application();
   await app.init({ resizeTo: window });

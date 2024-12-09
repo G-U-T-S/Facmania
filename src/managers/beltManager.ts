@@ -2,6 +2,10 @@ import { Container } from 'https://cdn.jsdelivr.net/npm/pixi.js@8.5.2/dist/pixi.
 import { Belt } from '../objects/belt.js';
 import { basicVector } from '../utils';
 
+
+//TODO criar um sistema para lidar com a sincronização
+//TODO das esteiras, talvez algo como factorio, que separe cada esteira em sua propria linha
+
 //& coord / index / id = "x_y";
 
 
